@@ -1,0 +1,17 @@
+{
+  "name": "test5",
+  "displayName": "test5",
+  "expo": {
+    "name": "test5",
+    "slug": "test5",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
