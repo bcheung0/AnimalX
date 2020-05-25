@@ -61,3 +61,16 @@ buck-out/
 # Expo
 .expo/*
 web-build/
+android/app/build.gradle
+*.gradle
+*.java
+*.json
+*.jpg
+*.png
+android/build.gradle
+*.gradle
+android/build.gradle
+android/app/build.gradle
+android/app/build.gradle
+android/app/build.gradle
+android/build.gradle
