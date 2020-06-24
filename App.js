@@ -9,7 +9,7 @@ import Expo from 'expo';
 import { Camera } from 'expo-camera';
 import { Marker,Circle,Callout } from 'react-native-maps';
 import centerPic from './assets/dog2.png';
-
+import * as Location from 'expo-location';
 
 
 // Firebase App (the core Firebase SDK) is always required and must be listed first
@@ -52,8 +52,8 @@ function MapScreen() {
   let regionCoor = {
     latitude: 40.748441,
     longitude: -73.985664,
-    latitudeDelta: 0.0100,
-    longitudeDelta: 0.0081,
+    latitudeDelta: 0.0150,
+    longitudeDelta: 0.009,
   };
 
   
@@ -87,8 +87,10 @@ function MapScreen() {
            
            </View> */}
         <Callout>
-          <Text style={{width:200,height:200,alignItems:'center'}}>  <Image source={{ uri: "https://i.postimg.cc/PqCdxBwk/marumaru.jpg" }} 
-            style={{ width: 200, height: 200,alignItems: 'center',flex:1, }} />  </Text>
+          <Text style={{width:500,height:800,alignItems:'center',justifyContent:'center'}}>  
+          <Image source={{ uri: "https://i.postimg.cc/PqCdxBwk/marumaru.jpg" }} 
+            style={{ width: 419, height: 533,alignItems: 'center',flex:1,resizeMode:"cover" }} />  
+            </Text>
             
         </Callout>
       </Marker>
@@ -97,28 +99,39 @@ function MapScreen() {
       <Marker
           coordinate = {{latitude: regionCoor.latitude+.0005,longitude: regionCoor.longitude+.0005}} 
           pinColor = {'#0000ff'}
-          
-      >
-        <Callout style={{width:200,height:200}}>
-          <Text>  <Image source={{ uri: "https://i.postimg.cc/tgNNsMQ2/arthus.jpg" }} 
-            style={{ width: 200, height: 400,alignItems: 'center',flex:1 }} />  </Text>
+        >
+        {/* CALLOUT STYLE NOT CONTAINER */}
+        <Callout style={{width:1000,height:2000}}> 
+          <Text style={{width:1000,height:1000}}>  <Image source={{ uri: "https://i.postimg.cc/tgNNsMQ2/arthus.jpg" }} 
+            style={{ width: 200, height: 300,alignItems: 'center',flex:1 }} />  </Text>
         </Callout>
         </Marker>
 
+
+      {/*  */}
       <Marker
           coordinate = {{latitude: regionCoor.latitude-.001,longitude: regionCoor.longitude-.001}} 
           pinColor = {'#0000ff'}
-      />
-
+      > 
+      <Callout style={{width:400,height:300}}>
+          <Text>  <Image source={{ uri: "https://i.postimg.cc/hhWbmHX2/sharoncats.jpg" }} 
+            style={{ width: 200, height: 300,alignItems: 'center',flex:1 }} />  </Text>
+      </Callout>
+      </Marker>
+      
+          {/* https://i.postimg.cc/tTHjrzs7/hearldsquare.jpg 
+            */}
       <Marker
-          coordinate = {{latitude: regionCoor.latitude+.002,longitude: regionCoor.longitude-.002}} 
+         coordinate = {{latitude: regionCoor.latitude+.002,longitude: regionCoor.longitude-.002}}
           pinColor = {'#0000ff'}
-      />
+      > 
+      <Callout style={{width:500,height:500}}>
+          <Text>  <Image source={{ uri: "https://i.postimg.cc/tTHjrzs7/hearldsquare.jpg " }} 
+            style={{ width: 600, height: 400,alignItems: 'center',flex:1 }} />  </Text>
+      </Callout>
+      </Marker>
 
       </MapView>
-
-
-    // </View>
 
      
   );
@@ -126,15 +139,32 @@ function MapScreen() {
 }
 
 function CameraScreen() {
+  //Camera
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null)
   const [type, setType] = useState(Camera.Constants.Type.back);
+  // Location
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
     useEffect(() => {
       (async () => {
         const { status } = await Camera.requestPermissionsAsync();
         setHasPermission(status === 'granted');
       })();
     }, []);
+    useEffect(() => {
+      (async () => {
+        let { status } = await Location.requestPermissionsAsync();
+        if (status !== 'granted') {
+          setErrorMsg('Permission to access location was denied');
+        }
+
+        //Asks permission, gets and sets location
+        let location = await Location.getCurrentPositionAsync({});
+        setLocation(location);
+        console.log(location.coords.latitude);
+      })();
+    });
 
     if (hasPermission === null) {
       return <View />;
@@ -142,6 +172,16 @@ function CameraScreen() {
     if (hasPermission === false) {
       return <Text>No access to camera</Text>;
     }
+
+      let text = 'Waiting..';
+        if (errorMsg) {
+          text = errorMsg;
+        } else if (location) {
+          text = JSON.stringify(location);
+          // console.log(location.coords.latitude);
+          // console.log(location.coords.longitude);
+
+       }
     return (
       <View style={{ flex: 1 }}>
         <Camera style={{ flex: 1 }} type={type} ref={ref => {
@@ -182,8 +222,16 @@ function CameraScreen() {
           </TouchableOpacity>
         </View>
       </Camera>
-    </View>
+      {/* Prints Location Coordinates to Screen */}
+      {/* <Text> {text} </Text>  // this prints the whole json data */}
+      {/* THIS IS CONSANTLY UPDATING */}
+      <Text>Latitude: {location.coords.latitude}</Text>
+      <Text>Longitude: {location.coords.longitude}</Text>
+    </View>          
   );
+
+  
+
   }
 
 const Tab = createBottomTabNavigator();
